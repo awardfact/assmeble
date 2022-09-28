@@ -1,6 +1,6 @@
 section .text
-global _main
-_main : 
+global main
+main : 
     mov ax , 1
     mov bx, 2
     add ax, bx
