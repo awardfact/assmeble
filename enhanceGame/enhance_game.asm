@@ -123,6 +123,8 @@ CMAIN:
     GAME:
     ;현재 보유 돈 출력
     
+    PRINT_STRING msg__
+    NEWLINE
     PRINT_STRING msg_1 
     PRINT_DEC 4, money 
     NEWLINE
@@ -136,14 +138,14 @@ CMAIN:
     ; 강화 확률과 강화 비용 출력 
     
     mov eax, [c_enhance]
-    mov ebx , [percent + eax]
+    mov ebx , [percent + eax * 4]
     PRINT_STRING msg_4
     PRINT_DEC 4, ebx 
     PRINT_STRING msg_percent
 
     
     mov eax, [c_enhance]
-    mov ebx , [e_price + eax]    
+    mov ebx , [e_price + eax * 4]    
     PRINT_STRING msg_5
     PRINT_DEC 4, ebx 
     NEWLINE
@@ -151,16 +153,17 @@ CMAIN:
     
     ; 현재 판매 금액 출력 
     mov eax, [c_enhance]
-    mov ebx , [s_price + eax]    
+    mov ebx , [s_price + eax * 4]    
     PRINT_STRING msg_6
     PRINT_DEC 4, ebx 
     NEWLINE
     
     ;입력 요청 출력 
     PRINT_STRING msg_3
-    PRINT_DEC 4, c_enhance 
+
     NEWLINE
-    
+    PRINT_STRING msg__
+    NEWLINE
     ;숫자 입력을 받고 1이면 강화 2면 판매 3이면 종료 진행 다른거면 다시 반복 
     GET_DEC 4, input_key
     mov eax, [input_key]
@@ -183,14 +186,15 @@ CMAIN:
       JL nomoney
       sub eax, ebx
       mov [money], eax
-      PRINT_DEC 4, input_key    
 
-      NEWLINE
       mov eax , [c_enhance]
       mov ebx , [percent + eax *4]
       
+      ; 랜덤숫자를 받아서 확률보다 높은지 ㅂ교 
       call _getnumber
       PRINT_DEC 4 , eax
+      NEWLINE
+        PRINT_DEC 4 , ebx
       NEWLINE
       cmp eax, ebx
       JLE enhance_s
@@ -198,21 +202,31 @@ CMAIN:
       
       enhance_s:
       PRINT_STRING msg_enhances
+      NEWLINE
        mov eax , [c_enhance]
        inc eax
        mov [c_enhance], eax
       jmp GAME
       enhance_f:
       PRINT_STRING msg_enhancef
+      NEWLINE
       mov eax,0
       mov [c_enhance], eax
       jmp GAME
       
       nomoney:
-      PRINT_STRING  c_enhance
+      PRINT_STRING  msg_nomoney
+      NEWLINE
       jmp GAME
-    sell:   
-                
+    sell:           
+    ;강화된 아이템을 파는경우 
+    mov eax , [c_enhance]
+    mov ebx, [s_price + eax * 4]
+    mov eax , [money]
+    add eax, ebx
+    mov [money] , eax
+    mov [c_enhance],dword 0
+    jmp GAME
     exit:
         
     
@@ -234,11 +248,11 @@ input_key dd 0
 fileName db 'enhanceGame.txt',0
 fileStatus dd 0
 
-
+msg__ db '-----------------------------------------',0
 
 msg_1 db 'current money : ' ,0
 msg_2  db 'current enhance step : ', 0
-msg_3 db  'input number enhance 1, sell 2, game exit 3', 0
+msg_3 db  'input number enhance 1, sell 2, game exit 3 ', 0
 msg_4 db 'enhance percent : ', 0
 msg_5 db '    enhance price : ', 0
 msg_6 db 'sell price : ', 0
