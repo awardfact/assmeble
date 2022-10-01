@@ -43,6 +43,6 @@ enhanceGame  -> 현재 보유중인 골드 저장 파일
 
 
 nasm -g -f win32 enhance_game.asm -o enhance_game.obj 
-gcc enhance_game.obj macro.o mylib.o -g -o enhance_game -32
+gcc enhance_game.obj macro.o mylib.o -g -o enhance_game -m32
 
 
